@@ -1,0 +1,37 @@
+{
+  "private": true,
+  "name": "mc-reminder-sender",
+  "description": "MC Reminder Sender",
+  "version": "1.0.0",
+  "author": "Eugene Lek",
+  "main": "app/background.js",
+  "scripts": {
+    "dev": "nextron",
+    "build": "nextron build",
+    "build:all": "nextron build --all",
+    "build:win32": "nextron build --win --ia32",
+    "build:win64": "nextron build --win --x64",
+    "build:mac": "nextron build --mac --x64",
+    "build:linux": "nextron build --linux",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "electron-serve": "^1.1.0",
+    "electron-store": "^8.1.0",
+    "formik": "^2.4.3",
+    "puppeteer": "^21.0.3",
+    "xlsx": "^0.18.5",
+    "yup": "^1.2.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.15",
+    "electron": "^21.3.3",
+    "electron-builder": "^23.6.0",
+    "next": "^12.3.4",
+    "nextron": "^8.5.0",
+    "postcss": "^8.4.28",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^3.3.3"
+  }
+}

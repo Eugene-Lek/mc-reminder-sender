@@ -1,0 +1,12 @@
+appId: mc.reminder.sender
+productName: MC Reminder Sender
+copyright: Copyright © 2023 Eugene Lek
+directories:
+  output: dist
+  buildResources: resources
+files:
+  - from: .
+    filter:
+      - package.json
+      - app
+publish: null
