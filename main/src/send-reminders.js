@@ -93,7 +93,11 @@ export const sendReminders = async (event, binaryExcel) => {
 
         // Execution
         MCTrackingSheet = XLSX.utils.sheet_to_json(MCTrackingSheet, { raw: false, dateNF: 'dd/mm/yyyy' });
+
+        // Filter for records which were not from SAF Medical Centre and have not been confirmed to be submitted
         MCTrackingSheet = MCTrackingSheet.filter(record => (!record[headerMappings["Submitted MC?"]]?.trim() && record[headerMappings["MC from a SAF Medical Centre?"]] == "No"))
+        // Filter for records with valid HP (at least 8 chars)
+        MCTrackingSheet = MCTrackingSheet.filter(record => record[headerMappings["HP Number"]].length >= 8)
 
         const browser = await puppeteer.launch({ 
             headless: false,
