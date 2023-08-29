@@ -3,7 +3,8 @@ import serve from 'electron-serve';
 import { createWindow } from './helpers';
 import { sendReminders } from './src/send-reminders';
 import { getMessageTemplates, updateMessageTemplates } from './src/message-templates';
-import { getColumnHeaders, updateColumnHeaders } from './src//column-headers';
+import { getColumnHeaders, updateColumnHeaders } from './src/column-headers';
+const path = require("path")
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -26,7 +27,8 @@ if (isProd) {
     width: 1000,
     height: 600,
     webPreferences: {
-      preload: 'C:/Users/perio/Documents/Coding/Nextron/MC Reminder Sender/main/src/preload.js'
+      preload: path.join(__dirname, 'preload.js'),
+      sandbox: false
     }
   });
 
