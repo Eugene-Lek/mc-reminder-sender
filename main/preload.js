@@ -7,5 +7,3 @@ contextBridge.exposeInMainWorld('myAPI', {
   getColumnHeaders: () => ipcRenderer.invoke('get-column-headers'),
   updateColumnHeaders: (columnHeaders) => ipcRenderer.invoke('update-column-headers', columnHeaders)
 })
-
-console.log("test")
