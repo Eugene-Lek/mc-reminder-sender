@@ -13,7 +13,7 @@ export const getMessageTemplates = () => {
     return initTemplates
 }
 
-export const updateMessageTemplates = (messageTemplates) => {
+export const updateMessageTemplates = (event, messageTemplates) => {
     const store = new Store()
     store.set("Message Templates", messageTemplates)
 }

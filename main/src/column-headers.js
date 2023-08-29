@@ -19,7 +19,7 @@ export const getColumnHeaders = () => {
     return initColumnHeaders 
 }
 
-export const updateColumnHeaders = (columnHeaders) => {
+export const updateColumnHeaders = (event, columnHeaders) => {
     const store = new Store()
     store.set("Column Headers", columnHeaders)
 }
