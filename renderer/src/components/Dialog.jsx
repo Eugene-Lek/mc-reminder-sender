@@ -22,7 +22,10 @@ export function Dialog() {
                             <div className={styles.title}>{dialogSettings.title}</div>
                             <div className={styles.message}>
                                 {
+                                    typeof dialogSettings?.message == String ?
                                     dialogSettings?.message?.split("\n").map((segment, i) => <p key={i}>{segment}</p>)
+                                    :
+                                    dialogSettings?.message                                    
                                 }
                             </div>
                             <div className={styles.buttonGroup}>

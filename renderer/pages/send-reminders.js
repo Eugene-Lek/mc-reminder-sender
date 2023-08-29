@@ -77,7 +77,13 @@ const SendReminder = () => {
                 setUnsentRemindersExcelURL(url)
                 displayErrorDialog({
                     name: "BROWSER WAS CLOSED PREMATURELY",
-                    message: "The browser was closed before the reminders for all MC records were sent. \nThe excel sheet under the 'Run' button contains the remaining MC records. You can upload this and click 'Run' to send the remaining messages."
+                    message:
+                        <>
+                            <p>{`The browser was closed before the reminders for all MC records were sent.`}</p>
+                            <p><a className="underline text-cerulean hover:text-slate-300" href={url} download="Remaining MC records.xlsx">{"Click here "}</a>
+                                {`to download an Excel file containing the remaining MC records. You should upload this and click 'Run' to send the remaining messages.`}</p>
+                            <p>{`The excel sheet is also available under the 'Run' button if you are still on the "Send Reminders" page.`}</p>
+                        </>
                 })
 
             } else if (response.status == 504) {
@@ -86,7 +92,13 @@ const SendReminder = () => {
                 setUnsentRemindersExcelURL(url)
                 displayErrorDialog({
                     name: "SERVER TIMEOUT",
-                    message: "You probably minimised the browser or took too long to scan the Whatsapp Web QR code. You should always open another desired tab on top of the browser instead of minimising it because doing so will pause the program.\nThe excel sheet under the 'Run' button contains the remaining MC records. You can upload this and click 'Run' to send the remaining messages."
+                    message:
+                        <>
+                            <p>{`You probably minimised the browser or took too long to scan the Whatsapp Web QR code. You should always open another desired tab on top of the browser instead of minimising it because doing so will pause the program.`}</p>
+                            <p><a className="underline text-cerulean hover:text-slate-300" href={url} download="Remaining MC records.xlsx">{"Click here "}</a>
+                                {`to download an Excel file containing the remaining MC records. You should upload this and click 'Run' to send the remaining messages.`}</p>
+                            <p>{`The excel sheet is also available under the 'Run' button if you are still on the "Send Reminders" page.`}</p>
+                        </>
                 })
 
             } else if (response.attachmentBuffer) {
@@ -95,14 +107,20 @@ const SendReminder = () => {
                 setInvalidHPExcelURL(url)
                 displayErrorDialog({
                     name: "One or more HP numbers were invalid",
-                    message: "Reminder messages could not be sent to these HP numbers. The corresponding MC records can be found in the Excel file generated under the 'Run' button.\nPlease manually remind them via Whatsapp instead."
+                    message:
+                        <>
+                            <p>{`Reminder messages could not be sent to one or more HP numbers.`}</p>
+                            <p><a className="underline text-cerulean hover:text-slate-300" href={url} download="MC records with invalid HP numbers.xlsx">{"Click here "}</a>
+                                {`to download an Excel file containing the corresponding MC records. Please manually remind them via Whatsapp instead.`}</p>
+                            <p>{`The excel sheet is also available under the 'Run' button if you are still on the "Send Reminders" page.`}</p>
+                        </>
                 })
 
             } else if (response.status == 400) {
-                const {error} = response
+                const { error } = response
                 displayErrorDialog(error)
 
-            } else if (response.status == 200){
+            } else if (response.status == 200) {
                 setDialogSettings({
                     title: "SUCCESS",
                     message: "All reminders were successfully sent!",
