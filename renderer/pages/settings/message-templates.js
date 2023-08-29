@@ -30,7 +30,7 @@ function MessageTemplates() {
         }
 
         try {
-            window.myAPI.updateMessageTemplates({ MC, HL })
+            await window.myAPI.updateMessageTemplates({ MC, HL })
             setEditMode(false)
         } catch(error) {
             displayErrorDialog(error)

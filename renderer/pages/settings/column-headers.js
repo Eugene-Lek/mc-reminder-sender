@@ -27,7 +27,7 @@ function ColumnHeaders() {
         }
 
         try {
-            window.myAPI.updateColumnHeaders(columnHeaders)
+            await window.myAPI.updateColumnHeaders(columnHeaders)
             setEditMode(false)
         } catch(error) {
             displayErrorDialog(error)
