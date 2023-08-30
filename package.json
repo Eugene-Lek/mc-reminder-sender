@@ -1,6 +1,7 @@
 {
   "private": true,
   "name": "mc-reminder-sender",
+  "productName": "MC Reminder Sender",
   "description": "MC Reminder Sender",
   "version": "1.0.0",
   "author": "Eugene Lek",
