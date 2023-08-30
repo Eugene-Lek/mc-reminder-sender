@@ -72,6 +72,7 @@ const SendReminder = () => {
             const response = await window.myAPI.sendReminders(MCTrackingExcelFile.content)
 
             if (response.status == 500) {
+                console.log(response.error)
                 const response_blob = new Blob([response.attachmentBuffer])
                 const url = URL.createObjectURL(response_blob)
                 setUnsentRemindersExcelURL(url)
@@ -87,6 +88,7 @@ const SendReminder = () => {
                 })
 
             } else if (response.status == 504) {
+                console.log(response.error)
                 const response_blob = new Blob([response.attachmentBuffer])
                 const url = URL.createObjectURL(response_blob)
                 setUnsentRemindersExcelURL(url)
