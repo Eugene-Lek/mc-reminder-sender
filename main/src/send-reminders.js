@@ -96,19 +96,17 @@ export const sendReminders = async (event, binaryExcel) => {
 
         // Filter for records which were not from SAF Medical Centre and have not been confirmed to be submitted
         MCTrackingSheet = MCTrackingSheet.filter(record => (!record[headerMappings["Submitted MC?"]]?.trim() && record[headerMappings["MC from a SAF Medical Centre?"]] == "No"))
-        // Filter for records with valid HP (at least 8 chars)
-        MCTrackingSheet = MCTrackingSheet.filter(record => record[headerMappings["HP Number"]].length >= 8)
 
-        let options = { 
+        let options = {
             headless: false,
             args: [
                 '--disable-background-timer-throttling',
                 '--disable-backgrounding-occluded-windows',
                 '--disable-renderer-backgrounding'
-              ]             
+            ]
         }
-        if(__dirname.includes('resources')) { // if production mode. In dev mode, chromium is alr installed in User/.cache/puppeteer
-            options.executablePath = __dirname.split('app.asar')[0] + 'node_modules/puppeteer/.local-chromium/win64-115.0.5790.170/chrome-win64/chrome.exe'              
+        if (__dirname.includes('resources')) { // if production mode. In dev mode, chromium is alr installed in User/.cache/puppeteer
+            options.executablePath = __dirname.split('app.asar')[0] + 'node_modules/puppeteer/.local-chromium/win64-115.0.5790.170/chrome-win64/chrome.exe'
         }
 
         const browser = await puppeteer.launch(options);
@@ -118,6 +116,16 @@ export const sendReminders = async (event, binaryExcel) => {
         for (let i = 0; i < MCTrackingSheet.length; i++) {
             //console.log("Started search for selector")
             const record = MCTrackingSheet[i]
+
+            // If the phone number is invalid (less than 8 chars), skip and add to the Invalid HP excel sheet
+            if (record[headerMappings["HP Number"]].length < 8) {
+                invalidHPMCRecords.push([
+                    record[headerMappings["Rank"]], record[headerMappings["Name"]], record[headerMappings["HP Number"]], record[headerMappings["MC Type"]],
+                    record[headerMappings["MC from a SAF Medical Centre?"]], record[headerMappings["MC Start Date"]], record[headerMappings["MC End Date"]],
+                    record[headerMappings["Submitted MC?"]]
+                ])
+                continue
+            }
 
             const ph_num = record[headerMappings["HP Number"]].length == 8 ? `+65${record[headerMappings["HP Number"]]}` : `+${record[headerMappings["HP Number"]]}`
 
@@ -135,8 +143,8 @@ export const sendReminders = async (event, binaryExcel) => {
             await page.setDefaultTimeout(0);
 
             const isValidHP = await Promise.race([
-                page.waitForSelector(VALID_HP_DATA_TEST_ID_SELECTOR).then(res => {return new Promise((res, rej) => { res(true) }) }),
-                page.waitForSelector(INVALID_HP_DATA_TEST_ID_SELECTOR).then(res => {return new Promise((res, rej) => { res(false) }) })
+                page.waitForSelector(VALID_HP_DATA_TEST_ID_SELECTOR).then(res => { return new Promise((res, rej) => { res(true) }) }),
+                page.waitForSelector(INVALID_HP_DATA_TEST_ID_SELECTOR).then(res => { return new Promise((res, rej) => { res(false) }) })
             ])
 
             if (!isValidHP) {
@@ -151,7 +159,7 @@ export const sendReminders = async (event, binaryExcel) => {
                 continue
             }
 
-            const endTime = performance.now()            
+            const endTime = performance.now()
             if (((endTime - startTime) + MIN_DELAY_AFTER_LOAD) < MIN_DELAY_AFTER_INIT_FETCH) {
                 //console.log(`Send button detected, waiting ${(MIN_DELAY_AFTER_INIT_FETCH - (endTime - startTime))/1000} seconds before clicking enter`)
                 await new Promise(r => setTimeout(r, MIN_DELAY_AFTER_INIT_FETCH - (endTime - startTime)))
