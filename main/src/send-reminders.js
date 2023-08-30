@@ -127,6 +127,18 @@ export const sendReminders = async (event, binaryExcel) => {
                 continue
             }
 
+            const [day, month, year] = record[headerMappings["MC Start Date"]].split("/")
+            const McStartDateObject = new Date(int(year), int(month)-1, int(day))
+            const todayObject = new Date()
+
+            // If the MC Start Date is in the future, do not send a reminder for it
+            if (McStartDateObject > todayObject) continue
+
+            // If today is more than 12 days after the the MC Start Date, do not send a reminder for it
+            // We do not want servicemen to read the message and upload the MC after the deadline (14 days after MC Start Date)
+            if (McStartDateObject + 12 * 24*60*60*1000 < todayObject) continue
+
+            // Prepare the record's HP and reminder message
             const ph_num = record[headerMappings["HP Number"]].length == 8 ? `+65${record[headerMappings["HP Number"]]}` : `+${record[headerMappings["HP Number"]]}`
 
             const message_template = record[headerMappings["MC Type"]] == "HL" ? HL_MESSAGE_TEMPLATE : MC_MESSAGE_TEMPLATE
