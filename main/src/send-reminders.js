@@ -99,14 +99,19 @@ export const sendReminders = async (event, binaryExcel) => {
         // Filter for records with valid HP (at least 8 chars)
         MCTrackingSheet = MCTrackingSheet.filter(record => record[headerMappings["HP Number"]].length >= 8)
 
-        const browser = await puppeteer.launch({ 
+        let options = { 
             headless: false,
             args: [
                 '--disable-background-timer-throttling',
                 '--disable-backgrounding-occluded-windows',
                 '--disable-renderer-backgrounding'
               ]             
-        });
+        }
+        if(__dirname.includes('resources')) { // if production mode. In dev mode, chromium is alr installed in User/.cache/puppeteer
+            options.executablePath = __dirname.split('app.asar')[0] + 'node_modules/puppeteer/.local-chromium/win64-115.0.5790.170/chrome-win64/chrome.exe'              
+        }
+
+        const browser = await puppeteer.launch(options);
         const page = await browser.newPage();
 
         var invalidHPMCRecords = []
@@ -192,7 +197,8 @@ export const sendReminders = async (event, binaryExcel) => {
         const resStatus = error.name == "ProtocolError" ? 504 : 500 // ProtocolError usually indicates a server timeout error
         return ({
             status: resStatus,
-            attachmentBuffer: unsentRemindersWBBuffer
+            attachmentBuffer: unsentRemindersWBBuffer,
+            error: error
         })
     }
 }
