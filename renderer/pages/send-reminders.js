@@ -105,7 +105,23 @@ const SendReminder = () => {
                     name: "SERVER TIMEOUT",
                     message:
                         <>
-                            <p>{`You probably minimised the browser or took too long to scan the Whatsapp Web QR code. You should always open another desired tab on top of the browser instead of minimising it because doing so will pause the program.`}</p>
+                            <p>{`You probably minimised the browser, lost internet connection, or took too long to scan the Whatsapp Web QR code. You should always open another desired tab on top of the browser instead of minimising it because doing so will pause the program.`}</p>
+                            <p><a className="underline text-cerulean hover:text-slate-300" href={url} download="Remaining MC records.xlsx">{"Click here "}</a>
+                                {`to download an Excel file containing the remaining MC records.`}</p>
+                            <p className="font-bold">{`You should upload this and click 'Run' to send the remaining messages.`}</p>
+                            <p>{`The excel sheet is also available under the 'Run' button if you are still on the "Send Reminders" page.`}</p>
+                        </>
+                })
+            } else if (response.status == 503) {
+                console.log(response.error)
+                const response_blob = new Blob([response.attachmentBuffer])
+                const url = URL.createObjectURL(response_blob)
+                setUnsentRemindersExcelURL(url)
+                displayErrorDialog({
+                    name: "INTERNET CONNECTION LOST",
+                    message:
+                        <>
+                            <p>{`Your computer lost internet connection before the reminders for all MC records were sent.`}</p>
                             <p><a className="underline text-cerulean hover:text-slate-300" href={url} download="Remaining MC records.xlsx">{"Click here "}</a>
                                 {`to download an Excel file containing the remaining MC records.`}</p>
                             <p className="font-bold">{`You should upload this and click 'Run' to send the remaining messages.`}</p>

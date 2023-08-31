@@ -248,7 +248,14 @@ export const sendReminders = async (event, binaryExcel) => {
             ])
         const unsentRemindersWBBuffer = generateExcelWBBuffer(remainingMCRecords, "Remaining MC records", headerMappings)
 
-        const resStatus = error.name == "ProtocolError" ? 504 : 500 // ProtocolError usually indicates a server timeout error
+        let resStatus
+        if (error.name == "ProtocolError") {
+            resStatus = 504 // ProtocolError usually indicates a server timeout error
+        } else if (error.message.includes("net::ERR_NAME_NOT_RESOLVED")) {
+            resStatus = 503 // Service Unavailable due to loss of connection
+        } else {
+            resStatus = 500 
+        }
         return ({
             status: resStatus,
             attachmentBuffer: unsentRemindersWBBuffer,
