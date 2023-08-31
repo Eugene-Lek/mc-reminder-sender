@@ -113,30 +113,41 @@ export const sendReminders = async (event, binaryExcel) => {
         const page = await browser.newPage();
 
         var invalidHPMCRecords = []
+        var urgentMCRecords = []
         for (let i = 0; i < MCTrackingSheet.length; i++) {
             //console.log("Started search for selector")
             const record = MCTrackingSheet[i]
 
+            // Create a slice of the record that can be added to an excel sheet if needed
+            const slicedRecord = [
+                record[headerMappings["Rank"]], record[headerMappings["Name"]], record[headerMappings["HP Number"]], record[headerMappings["MC Type"]],
+                record[headerMappings["MC from a SAF Medical Centre?"]], record[headerMappings["MC Start Date"]], record[headerMappings["MC End Date"]],
+                record[headerMappings["Submitted MC?"]]
+            ]
+
             // If the phone number is invalid (less than 8 chars), skip and add to the Invalid HP excel sheet
             if (record[headerMappings["HP Number"]].length < 8) {
-                invalidHPMCRecords.push([
-                    record[headerMappings["Rank"]], record[headerMappings["Name"]], record[headerMappings["HP Number"]], record[headerMappings["MC Type"]],
-                    record[headerMappings["MC from a SAF Medical Centre?"]], record[headerMappings["MC Start Date"]], record[headerMappings["MC End Date"]],
-                    record[headerMappings["Submitted MC?"]]
-                ])
+                invalidHPMCRecords.push(slicedRecord)
                 continue
             }
 
             const [day, month, year] = record[headerMappings["MC Start Date"]].split("/")
-            const McStartDateObject = new Date(int(year), int(month)-1, int(day))
+            const McStartDateObject = new Date(Number(year), Number(month)-1, Number(day))
             const todayObject = new Date()
 
             // If the MC Start Date is in the future, do not send a reminder for it
             if (McStartDateObject > todayObject) continue
 
-            // If today is more than 12 days after the the MC Start Date, do not send a reminder for it
-            // We do not want servicemen to read the message and upload the MC after the deadline (14 days after MC Start Date)
-            if (McStartDateObject + 12 * 24*60*60*1000 < todayObject) continue
+            // If the deadline (14 days after MC Start Date) is over, do not send a reminder for it
+            if (new Date(McStartDateObject.getTime() + 14 * 24*60*60*1000) <= todayObject) continue
+
+            // If today is 10 or more days after the MC Start Date (4 or less days left), add it to the Urgent MC excel sheet
+            // We want the operator (MC clerk) to personally message and spam call the people and have them submit the MC asap
+            // An automated message will still be sent for good measure
+            if (new Date(McStartDateObject.getTime() + 10 * 24*60*60*1000) <= todayObject) {
+                urgentMCRecords.push(slicedRecord)
+                continue
+            }
 
             // Prepare the record's HP and reminder message
             const ph_num = record[headerMappings["HP Number"]].length == 8 ? `+65${record[headerMappings["HP Number"]]}` : `+${record[headerMappings["HP Number"]]}`
@@ -161,11 +172,7 @@ export const sendReminders = async (event, binaryExcel) => {
 
             if (!isValidHP) {
                 //console.log("OK button detected, waiting 5 seconds before continuing")
-                invalidHPMCRecords.push([
-                    record[headerMappings["Rank"]], record[headerMappings["Name"]], record[headerMappings["HP Number"]], record[headerMappings["MC Type"]],
-                    record[headerMappings["MC from a SAF Medical Centre?"]], record[headerMappings["MC Start Date"]], record[headerMappings["MC End Date"]],
-                    record[headerMappings["Submitted MC?"]]
-                ])
+                invalidHPMCRecords.push(slicedRecord)
                 await new Promise(r => setTimeout(r, MIN_DELAY_BEFORE_NEXT_RECORD))
                 //console.log("continued")
                 continue
@@ -189,17 +196,44 @@ export const sendReminders = async (event, binaryExcel) => {
 
         browser.close()
 
-        if (invalidHPMCRecords.length == 0) {
+        if (urgentMCRecords.length != 0 && invalidHPMCRecords.length != 0) {
+            const data = [
+                [],
+                ["URGENT ATTENTION REQUIRED"],
+                [],
+                ...urgentMCRecords,
+                [],
+                ["Invalid HPs"],
+                [],       
+                ...invalidHPMCRecords         
+            ]
+            const urgentMCandInvalidHPWBBuffer = generateExcelWBBuffer(data, "Urgent MC records & MC records with invalid HP numbers", headerMappings)
             return ({
-                status: 200
-            })
+                status: 200,
+                remarks: "Urgent Attention Required & Invalid HPs",
+                attachmentBuffer: urgentMCandInvalidHPWBBuffer
+            })            
 
-        } else {
+        } else if (invalidHPMCRecords.length != 0) {
             const invalidHPWBBuffer = generateExcelWBBuffer(invalidHPMCRecords, "MC records with invalid HP numbers", headerMappings)
             return ({
                 status: 200,
+                remarks: "Invalid HPs",
                 attachmentBuffer: invalidHPWBBuffer
             })
+
+        } else if (urgentMCRecords.length != 0) {
+            const urgentMCWBBuffer = generateExcelWBBuffer(urgentMCRecords, "Urgent MC records", headerMappings)
+            return ({
+                status: 200,
+                remarks: "Urgent Attention Required",
+                attachmentBuffer: urgentMCWBBuffer
+            })
+
+        } else {
+            return ({
+                status: 200
+            })            
         }
 
     } catch (error) {
