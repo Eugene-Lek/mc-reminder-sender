@@ -3,7 +3,7 @@
   "name": "mc-reminder-sender",
   "productName": "MC Reminder Sender",
   "description": "MC Reminder Sender",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Eugene Lek",
   "main": "app/background.js",
   "scripts": {
