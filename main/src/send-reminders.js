@@ -98,6 +98,7 @@ export const sendReminders = async (event, binaryExcel) => {
         MCTrackingSheet = MCTrackingSheet.filter(record => (!record[headerMappings["Submitted MC?"]]?.trim() && record[headerMappings["MC from a SAF Medical Centre?"]] == "No"))
 
         let options = {
+            defaultViewport: null,
             headless: false,
             args: [
                 '--disable-background-timer-throttling',
