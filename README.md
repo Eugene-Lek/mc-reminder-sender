@@ -1,5 +1,5 @@
 ## Function
-Takes in an Excel Sheet of MC records as input and automates the process of sending reminder Whatsapp messages to them.
+Takes in an Excel Sheet of MC records and automates the process of sending reminder Whatsapp messages to individuals who have yet to submit their MC.
 
 The excel sheet requires columns corresponding to the following:
 - Rank
