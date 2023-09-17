@@ -127,7 +127,7 @@ export const sendReminders = async (event, binaryExcel) => {
             ]
 
             // If the phone number is invalid (less than 8 chars), skip and add to the Invalid HP excel sheet
-            if (record[headerMappings["HP Number"]].length < 8) {
+            if (!record[headerMappings["HP Number"]] || record[headerMappings["HP Number"]].length < 8) {
                 invalidHPMCRecords.push(slicedRecord)
                 continue
             }
