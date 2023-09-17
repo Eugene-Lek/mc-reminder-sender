@@ -1,38 +1,32 @@
-<p align="center"><img src="https://i.imgur.com/X7dSE68.png"></p>
+## Function
+Takes in an Excel Sheet of MC records as input and automates the process of sending reminder Whatsapp messages to them.
+
+The excel sheet requires columns corresponding to the following:
+- Rank
+- Name
+- HP Number (8 digits)
+- MC Type ("MC" or "HL")
+- MC from a SAF Medical Centre? ("Yes" or "No")
+- MC Start Date (dd/mm/yy)
+- MC End Date (dd/mm/yy)
+- Submitted MC? ("Yes" or "")
+
+These column header names can be configured in Settings > Column Headers
 
 ## Usage
-
-### Create an App
-
-```
-# with npx
-$ npx create-nextron-app my-app --example basic-javascript
-
-# with yarn
-$ yarn create nextron-app my-app --example basic-javascript
-
-# with pnpx
-$ pnpx create-nextron-app my-app --example basic-javascript
-```
 
 ### Install Dependencies
 
 ```
-$ cd my-app
-
-# using yarn or npm
-$ yarn (or `npm install`)
-
-# using pnpm
-$ pnpm install --shamefully-hoist
+$ npm install
 ```
 
 ### Use it
 
 ```
 # development mode
-$ yarn dev (or `npm run dev` or `pnpm run dev`)
+$ npm run dev
 
 # production build
-$ yarn build (or `npm run build` or `pnpm run build`)
+$ npm run build:win64 (or npm run build:linux)
 ```
