@@ -127,31 +127,31 @@ export const sendReminders = async (event, binaryExcel) => {
             ]
 
             // If the phone number is invalid (less than 8 chars), skip and add to the Invalid HP excel sheet
-            if (!record[headerMappings["HP Number"]] || record[headerMappings["HP Number"]].length < 8) {
+            if (!record[headerMappings["HP Number"]] || !Number.isInteger(Number(record[headerMappings["HP Number"]].replace(/\s/g, ''))) || record[headerMappings["HP Number"]].length < 8) {
                 invalidHPMCRecords.push(slicedRecord)
                 continue
             }
 
             const [day, month, year] = record[headerMappings["MC Start Date"]].split("/")
-            const McStartDateObject = new Date(Number(year), Number(month)-1, Number(day))
+            const McStartDateObject = new Date(Number(year), Number(month) - 1, Number(day))
             const todayObject = new Date()
 
             // If the MC Start Date is in the future, do not send a reminder for it
             if (McStartDateObject > todayObject) continue
 
             // If the deadline (14 days after MC Start Date) is over, do not send a reminder for it
-            if (new Date(McStartDateObject.getTime() + 14 * 24*60*60*1000) <= todayObject) continue
+            if (new Date(McStartDateObject.getTime() + 14 * 24 * 60 * 60 * 1000) < todayObject) continue
 
-            // If today is 10 or more days after the MC Start Date (4 or less days left), add it to the Urgent MC excel sheet
+            // If today is 9 or more days after the MC Start Date (5 or less days left), add it to the Urgent MC excel sheet
             // We want the operator (MC clerk) to personally message and spam call the people and have them submit the MC asap
             // An automated message will still be sent for good measure
-            if (new Date(McStartDateObject.getTime() + 10 * 24*60*60*1000) <= todayObject) {
+            if (new Date(McStartDateObject.getTime() + 9 * 24 * 60 * 60 * 1000) <= todayObject) {
                 urgentMCRecords.push(slicedRecord)
                 continue
             }
 
             // Prepare the record's HP and reminder message
-            const ph_num = record[headerMappings["HP Number"]].length == 8 ? `+65${record[headerMappings["HP Number"]]}` : `+${record[headerMappings["HP Number"]]}`
+            const ph_num = record[headerMappings["HP Number"]].replace(/\s/g, '').length == 8 ? `+65${record[headerMappings["HP Number"]]}` : `+${record[headerMappings["HP Number"]]}`
 
             const message_template = record[headerMappings["MC Type"]] == "HL" ? HL_MESSAGE_TEMPLATE : MC_MESSAGE_TEMPLATE
             const message = message_template
@@ -205,15 +205,15 @@ export const sendReminders = async (event, binaryExcel) => {
                 ...urgentMCRecords,
                 [],
                 ["Invalid HPs"],
-                [],       
-                ...invalidHPMCRecords         
+                [],
+                ...invalidHPMCRecords
             ]
             const urgentMCandInvalidHPWBBuffer = generateExcelWBBuffer(data, "Urgent MC records & MC records with invalid HP numbers", headerMappings)
             return ({
                 status: 200,
                 remarks: "Urgent Attention Required & Invalid HPs",
                 attachmentBuffer: urgentMCandInvalidHPWBBuffer
-            })            
+            })
 
         } else if (invalidHPMCRecords.length != 0) {
             const invalidHPWBBuffer = generateExcelWBBuffer(invalidHPMCRecords, "MC records with invalid HP numbers", headerMappings)
@@ -234,7 +234,7 @@ export const sendReminders = async (event, binaryExcel) => {
         } else {
             return ({
                 status: 200
-            })            
+            })
         }
 
     } catch (error) {
@@ -255,7 +255,7 @@ export const sendReminders = async (event, binaryExcel) => {
         } else if (error.message.includes("net::ERR_NAME_NOT_RESOLVED")) {
             resStatus = 503 // Service Unavailable due to loss of connection
         } else {
-            resStatus = 500 
+            resStatus = 500
         }
         return ({
             status: resStatus,

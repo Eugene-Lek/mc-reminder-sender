@@ -143,7 +143,7 @@ const SendReminder = () => {
                     name: "URGENT ATTENTION REQUIRED & INVALID HP NUMBERS",
                     message:
                         <>
-                            <p>{`The deadline for one or more MCs is in less than 4 days. Additionally, one or more HP numbers were invalid.`}</p>
+                            <p>{`The deadline for one or more MCs is in less than 5 days. Additionally, one or more HP numbers were invalid.`}</p>
                             <p><a className="underline text-cerulean hover:text-slate-300" href={url} download="Urgent MC records & MC records with invalid HP numbers.xlsx">{"Click here "}</a>
                                 {`to download an Excel file containing these MC records.`}</p>
                             <p className="font-bold">{`Please personally message them instead. Make sure to spam call those that are 1 to 2 days away from the deadline!`}</p>
@@ -175,7 +175,7 @@ const SendReminder = () => {
                     name: "URGENT ATTENTION REQUIRED",
                     message:
                         <>
-                            <p>{`The deadline for one or more MCs is in less than 4 days.`}</p>
+                            <p>{`The deadline for one or more MCs is in less than 5 days.`}</p>
                             <p><a className="underline text-cerulean hover:text-slate-300" href={url} download="Urgent MC records.xlsx">{"Click here "}</a>
                                 {`to download an Excel file containing these MC records.`}</p>
                                 <p className="font-bold">{` Please personally message them instead. Make sure to spam call those that are 1 to 2 days away from the deadline!`}</p>
@@ -255,7 +255,7 @@ const SendReminder = () => {
                             }
                             {UrgentExcelURL && !InvalidHPExcelURL ?
                                 <div className="mx-auto w-3/4">
-                                    <p className="font-bold">{`THE DEADLINE OF ONE OR MORE MCs IS IN LESS THAN 4 DAYS!`}</p>
+                                    <p className="font-bold">{`THE DEADLINE OF ONE OR MORE MCs IS IN LESS THAN 5 DAYS!`}</p>
                                     <p>
                                         <a className="underline text-cerulean hover:text-slate-300" href={UrgentExcelURL} download="Urgent MC records.xlsx">{"Download these MC records (Excel File) "}</a>
                                         to see who to personally message. Make sure to spam call those whose MCs are 1 to 2 days away from the deadline until they submit their MCs!
