@@ -134,7 +134,7 @@ export const sendReminders = async (event, binaryExcel) => {
 
             const [day, month, year] = record[headerMappings["MC Start Date"]].split("/")
             const McStartDateObject = new Date(Number(year), Number(month) - 1, Number(day))
-            const todayObject = new Date()
+            const todayObject = new Date((new Date()).toDateString())
 
             // If the MC Start Date is in the future, do not send a reminder for it
             if (McStartDateObject > todayObject) continue
