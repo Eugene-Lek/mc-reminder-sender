@@ -24,10 +24,12 @@ const DEFAULT_MESSAGE_TEMPLATES = {
     MC: "Hi {rank} {name}, I am CPL Eugene from 30SCE's S1 department. Have you submitted your MC *({mc start} to {mc end})* via NS Portal/ESS? Once done, *please send me a screenshot of the submission receipt*.\n \nThanks!"
 }
 
-const DEFAULT_DATA_TEST_ID_SELECTORS = {
+const PUPPETEER_SELECTORS = {
     "Valid HP": '::-p-aria([name="Send"][role="button"])',
     "Invalid HP": '::-p-aria([name="OK"][role="button"])'
 }
+
+const SEND_BUTTON_SELECTOR = `button[aria-label="Send"]`
 
 const generateExcelWBBuffer = (records, wbTitle, headerMappings) => {
     var wb = XLSX.utils.book_new()
@@ -57,11 +59,8 @@ export const sendReminders = async (event, binaryExcel) => {
         const HL_MESSAGE_TEMPLATE = MESSAGE_TEMPLATES["HL"]
         const MC_MESSAGE_TEMPLATE = MESSAGE_TEMPLATES["MC"]
 
-        if (!store.get("Data Test ID Selectors")) store.set("Data Test ID Selectors", DEFAULT_DATA_TEST_ID_SELECTORS)
-        //store.set("Data Test ID Selectors", DEFAULT_DATA_TEST_ID_SELECTORS) // Remove during prod
-        const DATA_TEST_ID_SELECTORS = store.get("Data Test ID Selectors")
-        const INVALID_HP_DATA_TEST_ID_SELECTOR = DATA_TEST_ID_SELECTORS["Invalid HP"]
-        const VALID_HP_DATA_TEST_ID_SELECTOR = DATA_TEST_ID_SELECTORS["Valid HP"]
+        const INVALID_HP_DATA_TEST_ID_SELECTOR = PUPPETEER_SELECTORS["Invalid HP"]
+        const VALID_HP_DATA_TEST_ID_SELECTOR = PUPPETEER_SELECTORS["Valid HP"]
 
         // Paramter Validation
         const workbook = XLSX.read(binaryExcel, { type: "binary", cellText: false, cellDates: true });
@@ -188,11 +187,12 @@ export const sendReminders = async (event, binaryExcel) => {
                 await new Promise(r => setTimeout(r, MIN_DELAY_AFTER_LOAD))
             }
             //console.log("Clicked Enter")
-            await page.keyboard.press("Enter")
+            await page.evaluate((SEND_BUTTON_SELECTOR) => {
+                document.querySelector(SEND_BUTTON_SELECTOR).click()
+            }, SEND_BUTTON_SELECTOR)
             await new Promise(r => setTimeout(r, MIN_DELAY_BEFORE_NEXT_RECORD))
 
             record["Sent Reminder"] = "Yes"
-
         }
 
         browser.close()
