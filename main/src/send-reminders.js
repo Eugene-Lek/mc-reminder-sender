@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer';
+import log from 'electron-log/main';
 
 var XLSX = require('xlsx');
 const { performance } = require('perf_hooks');
@@ -238,8 +239,7 @@ export const sendReminders = async (event, binaryExcel) => {
         }
 
     } catch (error) {
-        console.log("Error occurred")
-        console.log(error)
+        log.error(error)
         const remainingMCRecords = MCTrackingSheet
             .filter(record => !record["Sent Reminder"]) // filter for the records which were not marked as "Sent"
             .map(record => [
