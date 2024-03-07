@@ -3,7 +3,7 @@
   "name": "mc-reminder-sender",
   "productName": "MC Reminder Sender",
   "description": "MC Reminder Sender",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "author": "Eugene Lek",
   "main": "app/background.js",
   "scripts": {
@@ -17,6 +17,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "electron-log": "^5.1.1",
     "electron-serve": "^1.1.0",
     "electron-store": "^8.1.0",
     "formik": "^2.4.3",
@@ -36,6 +37,8 @@
     "tailwindcss": "^3.3.3"
   },
   "build": {
-    "extraResources": ["node_modules/puppeteer"]
+    "extraResources": [
+      "node_modules/puppeteer"
+    ]
   }
 }
