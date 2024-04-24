@@ -26,6 +26,7 @@ const DEFAULT_MESSAGE_TEMPLATES = {
 }
 
 const PUPPETEER_SELECTORS = {
+    "Login Successful": '[data-icon=\'search\']',
     "Valid HP": '::-p-aria([name="Send"][role="button"])',
     "Invalid HP": '::-p-aria([name="OK"][role="button"])'
 }
@@ -111,8 +112,14 @@ export const sendReminders = async (event, binaryExcel) => {
         }
 
         const browser = await puppeteer.launch(options);
-        const page = await browser.newPage();
 
+        // Get user to log into whatsapp web
+        const page = await browser.newPage();
+        await page.goto("https://web.whatsapp.com/")
+        await page.setDefaultTimeout(0);
+        await page.waitForSelector(PUPPETEER_SELECTORS["Login Successful"])
+
+        // Send reminders for each MC record
         var invalidHPMCRecords = []
         var urgentMCRecords = []
         for (let i = 0; i < MCTrackingSheet.length; i++) {
